@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Dropzone simple example</title>
+        
+        
+        <!--
+          DO NOT SIMPLY COPY THOSE LINES. Download the JS and CSS files from the
+          latest release (https://github.com/enyo/dropzone/releases/latest), and
+          host them yourself!
+        -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css">
+    </head>
+
+    <body>
+        <p>
+            This is the most minimal example of Dropzone. The upload in this example
+            doesn't work, because there is no actual server to handle the file upload.
+          </p>
+          
+            <!-- Change /upload-target to your upload address -->
+            <div id="assetPreviewUpload" class="dropzone">
+                <div class="fallback">
+                    <input name="file" type="file" multiple />
+                </div>
+            </div>
+
+
+            <button id="submit">Submit</button>
+            <script>
+                //Dropzone Configuration
+                Dropzone.autoDiscover = false;
+
+                $(document).ready(function(){
+
+                    // Manual dropzone init
+                    var myDropzone = new Dropzone("div#assetPreviewUpload", {
+                        url:"my-url",
+                        autoProcessQueue: false,
+                        maxFilesize: 50,
+                        parallelUploads: 1000,
+                        uploadMultiple: false,
+                        acceptedFiles: "image/*,.mov,.mp4,.webm",
+                        addRemoveLinks: true,
+                        init: function (e) {
+
+                            this.on("addedfile", function(file) { alert("Added file."); });
+
+                            var __myDropzone = this;
+                            var formData = new FormData();
+
+                            $('#submit').on("click", function() {
+                                __myDropzone.processQueue(); // Tell Dropzone to process all queued files.
+                                console.log(formData.getAll('asset_preview'));
+                                console.log(formData.getAll('asset'));
+
+                                console.log(myDropzone.getAcceptedFiles().length);
+                                console.log(myDropzone.files.length);
+                                
+                            });
+
+                            // Event to send your custom data to your server
+                            __myDropzone.on("processing", function(file, xhr, data) {
+
+                                // First param is the variable name used server side
+                                // Second param is the value, you can add what you what
+                                // Here I added an input value
+                                __myDropzone.options.url = '/some-new-url/';
+                                
+                                formData.append("asset_preview", file);
+                                formData.append('asset', 10);
+
+                            });
+
+                        }
+                    });
+
+                    
+                });
+          </script>
+    </body>
+</html>
+
+
+
+
